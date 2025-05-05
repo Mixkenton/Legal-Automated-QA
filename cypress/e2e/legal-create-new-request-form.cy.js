@@ -1,0 +1,60 @@
+/// <reference types="cypress" />
+describe('Legal create new request form', () => {
+  it('Login as user with permission', () => {
+    // Login
+    cy.loginLegalApp('p.sangkhawasee@gmail.com', 'Gdramix2589@')
+    cy.get('h1[data-order*="1"]').should('have.text', 'Signfile')
+    cy.wait(5000)
+    // Click "Create new form" button
+    cy.contains('button', /Create new form|สร้างเอกสารใหม่/).click()
+
+
+    // Select Company
+    cy.get('[data-path*="company"]').click()
+    cy.contains('div[role*="option"]', /ทีซีซีเทค|TCCtech/).click()
+    cy.get('[data-path*="company"]')
+      .invoke('val')
+      .should('match', /ทีซีซีเทค|TCCtech/)
+
+    // Select Party
+    cy.get('[data-path*="party"]').click()
+    cy.contains('div[role*="option"]', /Customer/).click()
+    cy.get('[data-path*="party"]').should('have.value', 'Customer')
+
+    // Select Contract Type {NDA}
+    cy.get('[data-path*="contractType"]').click()
+    cy.contains('div[role*="option"]', /NDA/).click()
+    cy.get('[data-path*="contractType"]').should('have.value', 'NDA')
+
+    // Click "Create Form" button
+    cy.contains('button', /Create Form|สร้างฟอร์ม/).click()
+    cy.contains('h1', /Form Information|รายละเอียดข้อมูลในเอกสาร/).should('be.visible')
+
+    //Fill Input General Information
+    cy.get('[data-path*="customers.0.info_customer_name"]').type('QA-Automated')
+    cy.get('[data-path*="customers.0.info_customer_email"]').type('QA.automated@gmail.com')
+    cy.get('[data-path*="customers.0.info_customer_company_name"]').type('QA-Automated-Company')
+    cy.get('[data-path*="customers.0.info_customer_address"]').type('QA-Automated-169/2')
+
+    //Fill Input Project Name
+    cy.get('[data-path*="info_project_name"]').type('QA-Automated-Bot-Test')
+
+    //Upload Attach Document
+    // อัปโหลดไฟล์โดยระบุ path ไปยัง input[type="file"]
+    cy.contains('button', /Upload|อัปโหลดไฟล์/).click()
+    cy.get('input[type="file"]').selectFile('cypress/src/คู่มือการพิมพ์หนังสือราชการ.pdf', { force: true })
+    cy.contains('p', /คู่มือการพิมพ์หนังสือราชการ.pdf/).should('be.visible')
+
+
+    //Fill Input Authorized 
+    cy.get('[data-path*="signers.0.signer_name"]').focus().type('Mix QA')
+    cy.contains('div[role="option"]', 'Mix QA').click()
+    cy.get('[data-path*="witnesses.0.witness_name"]').focus().type('Mix QA 365{downarrow}{enter}')
+     
+    //Submit form
+    // cy.contains('button', /Send Request Form|ส่งแบบฟอร์มคำขอเอกสาร/).click()
+
+
+  })
+
+})
