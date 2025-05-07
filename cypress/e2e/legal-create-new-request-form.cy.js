@@ -1,4 +1,6 @@
 /// <reference types="cypress" />
+
+
 describe('Legal create new request form', () => {
   it('Login as user with permission', () => {
     // Login
@@ -52,8 +54,22 @@ describe('Legal create new request form', () => {
     cy.get('[data-path*="witnesses.0.witness_name"]').focus().type('Mix QA 365{downarrow}{enter}')
      
     //Submit form
-    // cy.contains('button', /Send Request Form|ส่งแบบฟอร์มคำขอเอกสาร/).click()
+    cy.intercept('POST', 'https://dev-legal-api.tcctech.app/api/form/save-draft').as('saveDraft');
+    cy.contains('button', /Send Request Form|ส่งแบบฟอร์มคำขอเอกสาร/).click()
 
+    // รอให้ request จบ แล้วดึง response
+    cy.wait('@saveDraft').then((interception) => {
+      expect(interception.response.statusCode).to.eq(200);
+      cy.log('Response body:', JSON.stringify(interception.response.body));
+    
+      // ถ้าอยากดึงค่าเฉพาะ เช่น formId
+      const returnedFormId = interception.response.body.formId;
+      cy.log('Returned FormId:', returnedFormId);
+    
+      // หรือทำ assertion ตรวจสอบ
+      expect(returnedFormId).to.exist;
+    })
+    
 
   })
 

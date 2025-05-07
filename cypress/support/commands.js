@@ -30,3 +30,4 @@ Cypress.Commands.add('loginLegalApp', (email, password) => {
   cy.get('[data-path*="password"]').type(password)
   cy.get('button').contains('Log in').click()
 })
+
